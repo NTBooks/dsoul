@@ -114,12 +114,13 @@ If `skills-ref` is available: run `skills-ref validate <path-to-skill>` for each
 
 ---
 
-## Generate the publish script (only if all checks pass)
+## Generate the publish scripts (only if all checks pass)
 
 If and only if all steps above pass, and only for skills marked **publish** (not skip):
 
-- Create a single file in the **project root**: **`dsoul_publish_{version}.sh`** (e.g. `dsoul_publish_0.0.1.sh`), where `{version}` is the version from **package.json**.
-- Use Unix-style line endings and `#!/usr/bin/env bash` (or `#!/bin/bash`) so the user can run it on macOS/Linux; Windows users can run via Git Bash or WSL.
+- Create a Bash script in the **project root**: **`dsoul_publish_{version}.sh`** (e.g. `dsoul_publish_0.0.1.sh`), where `{version}` is the version from **package.json**.
+  - Use Unix-style line endings and `#!/usr/bin/env bash` (or `#!/bin/bash`) so the user can run it on macOS/Linux; Windows users can run via Git Bash or WSL.
+- Create a Windows batch script in the **project root**: **`dsoul_publish_{version}.bat`** (e.g. `dsoul_publish_0.0.1.bat`), with the **same logical steps** (register, balance, package, freeze, update `.publish-history`, balance again), but implemented with standard `cmd.exe` batch syntax.
 
 ### Script contents (in order)
 
@@ -167,6 +168,6 @@ If and only if all steps above pass, and only for skills marked **publish** (not
 | 8 | Ensure each skill has license (or explicit No License) and **SKILL.md** for **dsoul package** |
 | 9 | **Duplicate check:** package each skill, compute CID **before** version bump; consult **.publish-history**; if CID already published → mark **skip** (omit from script, do not update version); else mark **publish** |
 | 10 | **Sync version** from package.json only for skills marked **publish**; do not change version for **skip** |
-| 11 | If all pass: write **dsoul_publish_{version}.sh** only for skills marked **publish** (register once, balance once, package/freeze each, update .publish-history with zip + CID after each freeze, balance + summary). Do **not** run the script. |
+| 11 | If all pass: write **dsoul_publish_{version}.sh** and **dsoul_publish_{version}.bat** only for skills marked **publish** (register once, balance once, package/freeze each, update .publish-history with zip + CID after each freeze, balance + summary). Do **not** run the scripts. |
 
 After generation, tell the user the script path and that they should review and run it themselves.
