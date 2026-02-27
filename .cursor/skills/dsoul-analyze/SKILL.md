@@ -1,6 +1,10 @@
 ---
 name: dsoul-analyze
 description: Analyze another skill for malicious or unsafe patterns. Asks which skill to analyze, uses a Node script to bundle all source (SKILL.md, scripts, etc.) into JSON and a single audit payload, then provides a security-audit prompt for a separate LLM. Recommends scanning the skill zip with VirusTotal. Use when the user wants to security-audit a skill, check for malware/crypto-mining, or prepare a skill bundle for external analysis.
+license: MIT
+metadata:
+  author: DSoul.org
+  version: "0.0.1"
 ---
 
 # dsoul-analyze (Skill Security Analysis)

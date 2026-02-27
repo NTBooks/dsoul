@@ -1,6 +1,10 @@
 ---
 name: dsoul-agent
 description: Wallet/agent flow for dsoul/x402: create wallet, faucet (test ETH), register with WordPress, check balance, buy credits. Use when the user wants to set up or use an agent wallet for diamond-soul (Base Sepolia or mainnet). Run only the steps the user asked for; do not run buy-credits unless they explicitly ask to buy credits.
+license: MIT
+metadata:
+  author: DSoul.org
+  version: "0.0.1"
 ---
 
 # dsoul Agent (Wallet Flow)

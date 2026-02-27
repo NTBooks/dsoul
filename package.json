@@ -6,6 +6,7 @@
   "author": "DSoul.org",
   "license": "MIT",
   "dependencies": {
+    "archiver": "^7.0.1",
     "viem": "^2.21.0"
   },
   "scripts": {

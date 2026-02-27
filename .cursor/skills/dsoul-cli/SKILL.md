@@ -1,6 +1,10 @@
 ---
 name: dsoul-cli
 description: How to install and use the dsoul CLI (Diamond Soul Downloader from cid-skills). Use when the user wants to install the dsoul CLI, or run any dsoul command (install, config, uninstall, update, upgrade, package, freeze, balance, files, register, unregister, help). Not for wallet/agent flow (use dsoul-create-wallet, dsoul-faucet, etc. for that).
+license: MIT
+metadata:
+  author: DSoul.org
+  version: "0.0.1"
 ---
 
 # dsoul CLI (Diamond Soul Downloader)

@@ -2,6 +2,10 @@
 name: dsoul-publish
 description: Bundle and publish skills with the dsoul CLI. Validates skills against the Agent Skills spec, ensures author/version/readme/license, then generates dsoul_publish_{version}.sh for review. Use when the user wants to prepare or publish skills to DSOUL, run pre-publish checks, or generate the publish script.
 compatibility: Requires dsoul CLI (from cid-skills), project with package.json and .cursor/skills (or configured skills root). Use skills-ref to validate against Agent Skills spec if available.
+license: MIT
+metadata:
+  author: DSoul.org
+  version: "0.0.1"
 ---
 
 # dsoul Publish (Bundle & Publish Skills)
