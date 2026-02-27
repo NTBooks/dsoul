@@ -1,0 +1,7 @@
+node_modules/
+wallet.json
+testing.json
+.dsoul-temp/
+_tmp*
+.env
+*-lock*
