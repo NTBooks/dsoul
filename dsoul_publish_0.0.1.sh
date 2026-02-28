@@ -1,30 +1,34 @@
 #!/usr/bin/env bash
 # dsoul publish script v0.0.1 — review and run manually.
-# Requires: dsoul CLI (diamond-soul-downloader), DSOUL_USER/DSOUL_TOKEN or DSOUL_APPLICATION_KEY for non-interactive use.
+# Requires: dsoul CLI (diamond-soul-downloader). For non-interactive use set DSOUL_USER and DSOUL_TOKEN (or DSOUL_APPLICATION_KEY).
 # Skills to publish: dsoul-agent, dsoul-analyze, dsoul-cli, dsoul-publish
 
 set -e
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT"
+VERSION="0.0.1"
+SKILLS=(dsoul-agent dsoul-analyze dsoul-cli dsoul-publish)
+N=${#SKILLS[@]}
 
 echo "=== Register (once) ==="
-dsoul register
+dsoul register -i
 
 echo "=== Balance (before) ==="
 dsoul balance
-# If balance too low for 4 freezes, exit here (add check if needed)
+echo "If balance is too low for $N freezes, exit and add credits (e.g. pnpm buy-credits) then re-run."
+read -p "Continue? [y/N] " -n 1 -r
+echo
+[[ $REPLY =~ ^[Yy]$ ]] || exit 1
 
 echo "=== Package each skill ==="
-dsoul package "$ROOT/.cursor/skills/dsoul-agent"
-dsoul package "$ROOT/.cursor/skills/dsoul-analyze"
-dsoul package "$ROOT/.cursor/skills/dsoul-cli"
-dsoul package "$ROOT/.cursor/skills/dsoul-publish"
+for shortcode in "${SKILLS[@]}"; do
+  dsoul package "$ROOT/.cursor/skills/$shortcode"
+done
 
-VERSION="0.0.1"
 mkdir -p .publish-history/dsoul-agent .publish-history/dsoul-analyze .publish-history/dsoul-cli .publish-history/dsoul-publish
 
 echo "=== Freeze and record CIDs ==="
-for shortcode in dsoul-agent dsoul-analyze dsoul-cli dsoul-publish; do
+for shortcode in "${SKILLS[@]}"; do
   zip_path="$ROOT/.cursor/skills/$shortcode.zip"
   if [ -f "$zip_path" ]; then
     echo "Freezing $shortcode..."
@@ -35,9 +39,11 @@ for shortcode in dsoul-agent dsoul-analyze dsoul-cli dsoul-publish; do
       echo "$cid" > ".publish-history/$shortcode/$VERSION.cid.txt"
       echo "  CID: $cid"
     fi
+  else
+    echo "  Skip $shortcode: zip not found at $zip_path"
   fi
 done
 
 echo "=== Balance (after) ==="
 dsoul balance
-echo "Done. Packaged 4 skills, froze 4 zips. Update .publish-history with CIDs from freeze output if needed."
+echo "Done. Packaged $N skills, froze zips. CIDs recorded in .publish-history/<shortcode>/."
