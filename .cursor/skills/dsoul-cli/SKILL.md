@@ -4,7 +4,7 @@ description: How to install and use the dsoul CLI (Diamond Soul Downloader from 
 license: MIT
 metadata:
   author: DSoul.org
-  version: "0.0.1"
+  version: "0.2.0"
 ---
 
 # dsoul CLI (Diamond Soul Downloader)
@@ -54,6 +54,35 @@ After install: set skills folder for **-g** via app Options or `dsoul config ski
 
 Pick the command that matches what the user asked; run it or tell the user to run it locally if the agent has no shell access.
 
+### dsoul webstart
+
+Start the web UI (default port 8148).
+
+```bash
+dsoul webstart [port]
+```
+
+Running `dsoul` with no arguments also starts the web UI. Port can also be set via `PORT` env var or `.env`.
+
+### dsoul status
+
+Show current config and credential status.
+
+```bash
+dsoul status
+```
+
+### dsoul search
+
+Search the registry. Omit the query to browse the homepage.
+
+```bash
+dsoul search [query] [-n N] [--page=N]
+```
+
+- **-n N** — Number of results to return.
+- **--page=N** — Page number for paginated results.
+
 ### dsoul install
 
 Install a skill by CID or shortname. Blocked CIDs cannot be installed.
@@ -75,7 +104,7 @@ Set or view settings.
 dsoul config <key> [value]
 ```
 
-Keys: **dsoul-provider** (host, e.g. `https://dsoul.org`), **skills-folder** (path for `install -g`). Omit value to print current value.
+Keys: **dsoul-provider** (host, e.g. `https://dsoul.org`), **skills-folder** (path for `install -g`), **skills-folder-name** (display name for the skills folder). Omit value to print current value.
 
 ### dsoul uninstall
 
@@ -98,28 +127,78 @@ dsoul update [-g] [--local] [--delete-blocked | --no-delete-blocked]
 Upgrade installed skills to latest versions.
 
 ```bash
-dsoul upgrade [-g] [--local] [-y]
+dsoul upgrade [-g] [--local] [--delete-blocked | --no-delete-blocked]
+```
+
+### dsoul init
+
+Create a new folder with a `skill.md` template inside a given directory.
+
+```bash
+dsoul init <directory>
 ```
 
 ### dsoul package
 
-Create a zip of a skill folder (must contain **license.txt** and **skill.md**).
+Create a zip bundle of a skill folder (must contain **license.txt** and **skill.md**).
 
 ```bash
 dsoul package <folder>
 ```
 
-Creates `<foldername>.zip` in the parent of the folder.
+Creates `<foldername>.zip` in the parent of the folder. The published name is set when you run `dsoul freeze`, not here.
+
+### dsoul hash
+
+Print the CIDv0 (IPFS) hash of a local file without uploading it.
+
+```bash
+dsoul hash cidv0 <file>
+```
 
 ### dsoul freeze
 
 Stamp a file on DSOUL to get an IPFS CID. Uses credentials from **dsoul register**.
 
 ```bash
-dsoul freeze <file> [--shortname=NAME] [--tags=tag1,tag2] [--version=X.Y.Z] [--license_url=URL]
+dsoul freeze <file> [--filename=NAME] [--shortname=NAME] [--tags=tag1,tag2] [--version=X.Y.Z] [--license_url=URL] [--supercede=CID]
 ```
 
 Requires **dsoul register** first. Shortname is optional; server infers `username@NAME:version`.
+
+- **--filename=NAME** — Override the name the file is stored under on the server. If omitted, the local file's basename is used. The extension check for zip validation and upload mode is always based on the actual file on disk, so renaming via `--filename` won't break zip handling.
+
+Examples:
+```bash
+# Store as a different name regardless of local filename
+dsoul freeze ./output.md --filename=my-agent-soul.md --shortname=my-agent-soul --tags=soul,agent
+
+# Name a zip bundle on upload
+dsoul freeze ./build.zip --filename=my-skill-v2.zip --version=2.0.0
+```
+
+### dsoul supercede
+
+Supersede stamps a **forward pointer on the old file** saying "I have been replaced by this new CID." Anyone holding the old CID can discover the newer version through it.
+
+There are two ways to do this:
+
+**1. At freeze time** — pass the old CID and the server resolves the chain:
+
+```bash
+dsoul freeze ./v2.zip --supercede=QmOldCid123... --version=2.0.0
+```
+
+**2. After upload** — apply retroactively using the old file's WordPress post ID and the new file's CID:
+
+```bash
+dsoul supercede <old-post-id> <new-cid>
+```
+
+- `<old-post-id>` is the WordPress post ID of the **old** file being superseded.
+- `<new-cid>` is the IPFS CID of the **new** version that replaces it.
+
+Returns 403 if you don't own the post. Requires **dsoul register** first.
 
 ### dsoul balance (CLI)
 
@@ -158,6 +237,18 @@ Remove stored CLI credentials.
 ```bash
 dsoul unregister
 ```
+
+### dsoul plugin
+
+Manage CLI plugins.
+
+```bash
+dsoul plugin list
+dsoul plugin install <name> [-y]
+```
+
+- **list** — Show installed plugins.
+- **install \<name\>** — Install a plugin by name. Use **-y** to skip confirmation.
 
 ### dsoul help
 
