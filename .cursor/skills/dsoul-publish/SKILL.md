@@ -5,7 +5,7 @@ compatibility: Requires dsoul CLI (from cid-skills), project with package.json a
 license: MIT
 metadata:
   author: DSoul.org
-  version: "0.0.5"
+  version: "0.0.7"
 ---
 
 # dsoul Publish (Bundle & Publish Skills)
@@ -48,6 +48,43 @@ Execute these steps when the user asks to bundle, publish, or prepare skills. St
 - List direct child directories of the skills root (e.g. `.cursor/skills/`).
 - Treat each child directory as a skill folder **only if** it contains **SKILL.md** (case-sensitive per spec: `SKILL.md`). If a folder has no SKILL.md, list it as invalid and do not include it in publish.
 - For each valid skill folder, read the **`name`** field from SKILL.md frontmatter. Use this as the canonical skill name for packaging, freezing, and history lookups—**not** the folder name. (The spec requires them to match, but always use the SKILL.md `name` as the source of truth.)
+
+### 2b. Skip installed (downloaded) skills
+
+Skills installed via `dsoul install` are placed in a **`skills/`** subdirectory inside the configured skills folder, alongside a **`dsoul.json`** that tracks what was installed. These skills belong to their original authors and must **never** be included in a user's publish script.
+
+**`dsoul.json` structure** (as written by `dsoul install`):
+
+```json
+{
+  "skills": [
+    {
+      "cid": "QmRKnu75q...",
+      "shortname": null,
+      "num": 294,
+      "src": "https://dsoul.org/diamond_file/.../",
+      "hostname": "dsoul.org"
+    }
+  ]
+}
+```
+
+Note: `shortname` may be `null`. There is no `name` field matching SKILL.md frontmatter. The key signal is the **presence of `dsoul.json` alongside skill folders**.
+
+**Detection rule:** Any skill folder that is a **sibling of a `dsoul.json`** file was installed by `dsoul install` — not authored in this project.
+
+- When collecting skill folders in step 2, also scan for **`dsoul.json`** files anywhere within the skills root and its subdirectories.
+- For each `dsoul.json` found: all skill folders in the **same directory** as that `dsoul.json` are installed skills.
+- **Exclude those folders entirely**—do not validate, package, or freeze them. Report each as "Skipped (installed/downloaded — not yours to publish)".
+- If no `dsoul.json` is found anywhere in the skills root tree, proceed normally.
+
+**Common paths to check:**
+
+- `<skills-root>/skills/dsoul.json` (default: `Skills/skills/dsoul.json`)
+- `<skills-root>/dsoul.json`
+- `.cursor/skills/skills/dsoul.json` (if skills root is `.cursor/skills/`)
+
+> **Why:** Users should only publish skills they authored. Installed skills were frozen by someone else; re-publishing them would create duplicate registry entries under the wrong author.
 
 ### 3. Validate against Agent Skills spec
 
@@ -149,10 +186,11 @@ If and only if all steps above pass, and only for skills marked **publish** (not
      ```bash
      TMP=$(mktemp)
      dsoul freeze ... 2>&1 | tee -a "$LOG" | tee "$TMP" || true
-     new_cid=$(grep -oE 'Qm[A-Za-z0-9]{44,}' "$TMP" | head -1)
+     new_cid=$(sed ‘s/\x1b\[[0-9;]*m//g’ "$TMP" | grep ‘CID:’ | grep -v ‘supercede’ | grep -oE ‘Qm[A-Za-z0-9]{44,}’ | head -1)
      rm -f "$TMP"
      ```
-   - Extract the CID from the captured output (e.g. `grep -oE ‘Qm[A-Za-z0-9]{44,}’`). Write it to **`.publish-history/<skill-name>/<version>.cid.txt`** and copy the zip to **`.publish-history/<skill-name>/<version>.zip`**.
+   - **Critical — ANSI + supercede collision:** The CLI prints ANSI color codes and echoes the `--supercede=` CID in its output _before_ the new result CID. A bare `grep -oE ‘Qm...’ | head -1` will grab the old supercede CID instead of the new one. Always: (1) strip ANSI codes with `sed ‘s/\x1b\[[0-9;]*m//g’`, (2) filter to lines containing `CID:`, (3) exclude lines containing `supercede`.
+   - Extract the CID from the captured output. Write it to **`.publish-history/<skill-name>/<version>.cid.txt`** and copy the zip to **`.publish-history/<skill-name>/<version>.zip`**.
 
 5. **Balance again and summary**
    Run **`dsoul balance`** again (pipe to log) and print a short summary.
@@ -170,6 +208,7 @@ If and only if all steps above pass, and only for skills marked **publish** (not
 | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1    | Read version from root **package.json** (script filename only; skill versions are independent)                                                                                                                                                                                                                               |
 | 2    | List skill folders (direct children of skills root); require **SKILL.md**; read `name` from frontmatter as canonical skill name                                                                                                                                                                                              |
+| 2b   | **Skip installed skills:** scan for any `dsoul.json` inside the skills root tree. Any skill folder that is a **sibling of a `dsoul.json`** was installed via `dsoul install` — exclude it entirely and report it as "Skipped (installed — not yours to publish)"                                                             |
 | 3    | Validate each skill against Agent Skills spec (and skills-ref if available)                                                                                                                                                                                                                                                  |
 | 4    | Ask for **author** if not in SKILL.md; set **metadata.author**                                                                                                                                                                                                                                                               |
 | 5    | Add **readme** / **readme.txt** / **readme.md** if missing (generate one)                                                                                                                                                                                                                                                    |
