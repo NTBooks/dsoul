@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la E:/dsoul/.publish-history/dsoul-cli/ && cat E:/dsoul/.publish-history/dsoul-cli/*.txt 2>/dev/null; ls -la E:/dsoul/.publish-history/dsoul-agent/ && cat E:/dsoul/.publish-history/dsoul-agent/*.txt 2>/dev/null)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  }
+}

@@ -1,10 +1,10 @@
 ---
-name: dsoul-cli
+name: DSOUL SKILL dsoul-cli
 description: How to install and use the dsoul CLI (Diamond Soul Downloader from cid-skills). Use when the user wants to install the dsoul CLI, or run any dsoul command (install, config, uninstall, update, upgrade, package, freeze, balance, files, register, unregister, help). Not for wallet/agent flow (use dsoul-create-wallet, dsoul-faucet, etc. for that).
 license: MIT
 metadata:
   author: DSoul.org
-  version: "0.2.0"
+  version: "0.2.3"
 ---
 
 # dsoul CLI (Diamond Soul Downloader)
@@ -166,24 +166,25 @@ dsoul freeze <file> [--filename=NAME] [--shortname=NAME] [--tags=tag1,tag2] [--v
 
 Requires **dsoul register** first. Shortname is optional; server infers `username@NAME:version`.
 
-- **--filename=NAME** — Override the name the file is stored under on the server. If omitted, the local file's basename is used. The extension check for zip validation and upload mode is always based on the actual file on disk, so renaming via `--filename` won't break zip handling.
+- **--filename=NAME** — Set a **display title** for the file on the server (no extension needed, e.g. `my-skill`). This is the human-readable name shown in the registry — it does not affect the actual file stored or zip handling, which is always based on the file on disk.
 
 Examples:
-```bash
-# Store as a different name regardless of local filename
-dsoul freeze ./output.md --filename=my-agent-soul.md --shortname=my-agent-soul --tags=soul,agent
 
-# Name a zip bundle on upload
-dsoul freeze ./build.zip --filename=my-skill-v2.zip --version=2.0.0
+```bash
+# Set a clean display title for a skill bundle
+dsoul freeze ./dsoul-agent.zip --filename="dsoul-agent" --shortname=dsoul-agent --tags=skill,dsoul
+
+# Freeze a markdown file with a display title
+dsoul freeze ./output.md --filename="My Agent Soul" --shortname=my-agent-soul --tags=soul,agent
 ```
 
 ### dsoul supercede
 
-Supersede stamps a **forward pointer on the old file** saying "I have been replaced by this new CID." Anyone holding the old CID can discover the newer version through it.
+Stamps the **old** post with a pointer to the new CID (old → new). The old file gets a "superseded by `<new-cid>`" entry so anyone holding the old CID can discover the newer version.
 
 There are two ways to do this:
 
-**1. At freeze time** — pass the old CID and the server resolves the chain:
+**1. At freeze time** — pass the old CID via `--supercede` and the server updates the old post:
 
 ```bash
 dsoul freeze ./v2.zip --supercede=QmOldCid123... --version=2.0.0
@@ -195,7 +196,7 @@ dsoul freeze ./v2.zip --supercede=QmOldCid123... --version=2.0.0
 dsoul supercede <old-post-id> <new-cid>
 ```
 
-- `<old-post-id>` is the WordPress post ID of the **old** file being superseded.
+- `<old-post-id>` is the WordPress post ID of the **old** file (use `dsoul files` to look up post IDs by CID).
 - `<new-cid>` is the IPFS CID of the **new** version that replaces it.
 
 Returns 403 if you don't own the post. Requires **dsoul register** first.
@@ -212,13 +213,25 @@ Requires **dsoul register** first.
 
 ### dsoul files
 
-List the user's frozen files (CID, title, date, shortnames, tags).
+List the user's frozen files, paged. Each row includes the post ID (needed for `dsoul supercede`), CID, date, tags, stats, and URL.
 
 ```bash
 dsoul files [--page=N] [--per_page=N]
 ```
 
-Requires **dsoul register** first.
+Example row:
+
+```
+dsoul-fallback.js
+  • CID: QmQhtomy2yZsFcJwctbSfrSDHYZpCYKxsakXRnV4WcKS5v
+  • Post ID: 38
+  • Date: 2026-02-11
+  • Tags: dsoul, dsoul.0.1, javascript, js
+  • Stats: 5 views, 1 downloads, 0 favorites
+  • URL: https://dsoul.org/diamond_file/qmqhtomy2yzsfcjwctbsfrsdhyzpcykxsakxrnv4wcks5v/
+```
+
+Use `dsoul files` to look up post IDs for old versions before running `dsoul supercede`. Requires **dsoul register** first.
 
 ### dsoul register (CLI)
 

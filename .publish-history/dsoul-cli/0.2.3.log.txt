@@ -1,0 +1,57 @@
+=== dsoul Publish Script ===
+Date: Tue Mar 10 15:23:42 EDT 2026
+
+--- Register ---
+[32m✓[0m Registered as [1m[37mnick@chainletter.io[0m
+
+--- Balance (before) ---
+[36m→[0m [1mChecking balance[0m [90m[1m[37mnick@chainletter.io[0m[0m
+  [90m•[0m [90mendpoint:[0m [4m[36mhttps://dsoul.org/wp-json/diamond-soul/v1/balance[0m
+[32m✓[0m Stamps: [1m[96m1982[0m
+  [90m•[0m [90mPMCREDIT:[0m 1982
+  [90m•[0m [90maddress:[0m 0x9231a09bb47fe91b125e9ee95eeffb8b13b6a4c5
+
+--- Package: dsoul-cli ---
+
+[1m[36mPackaging [1m[37mdsoul-cli[0m[0m
+  [90m•[0m [90msource:[0m /mnt/e/dsoul/.cursor/skills/dsoul-cli
+[36m→[0m [1mValidating contents[0m
+[32m✓[0m Found 3 file(s), all required files present
+[36m→[0m [1mCreating zip archive[0m
+[32m✓[0m Created [1m[37mdsoul-cli.zip[0m (4.3 KB)
+  [90m•[0m [90moutput:[0m /mnt/e/dsoul/.cursor/skills/dsoul-cli.zip
+[90mDone in 0.0s[0m
+--- Freeze: dsoul-cli v0.2.3 ---
+
+[1m[36mFreezing [1m[37mdsoul-cli.zip[0m[0m
+  [90m•[0m [90mpath:[0m /mnt/e/dsoul/.cursor/skills/dsoul-cli.zip
+[36m→[0m [1mValidating zip structure[0m
+[32m✓[0m Zip structure valid
+[36m→[0m [1mUploading to DSOUL[0m
+  [90m•[0m [90mendpoint:[0m [4m[36mhttps://dsoul.org/wp-json/diamond-soul/v1/freeze[0m
+  [90m•[0m [90muser:[0m [1m[37mnick@chainletter.io[0m
+  [90m•[0m [90mtitle:[0m dsoul-cli
+  [90m•[0m [90mshortname:[0m dsoul-cli
+  [90m•[0m [90mtags:[0m skill,dsoul,cli
+  [90m•[0m [90msupercede:[0m QmZ5yJkyQ9dDvmEfu3faKi1cgSKSTfFEnXbf2dzs7GyLsr
+  [90m•[0m [90mversion:[0m 0.2.3
+  [90m•[0m [90msize:[0m 4.3 KB
+[32m✓[0m Frozen successfully
+  [90m•[0m [90mCID:[0m [36mQmbaRH8aTN51smgUXRiPRKEPW6JgJHs3UCqt6RdfYtNXKt[0m
+  [90m•[0m [90mURL:[0m [4m[36mhttps://dsoul.org/diamond_file/qmbarh8atn51smguxriprkepw6jgjhs3ucqt6rdfytnxkt/[0m
+[90mDone in 4.0s[0m
+CID: QmZ5yJkyQ9dDvmEfu3faKi1cgSKSTfFEnXbf2dzs7GyLsr
+dsoul-cli 0.2.3 published successfully.
+
+--- Balance (after) ---
+[36m→[0m [1mChecking balance[0m [90m[1m[37mnick@chainletter.io[0m[0m
+  [90m•[0m [90mendpoint:[0m [4m[36mhttps://dsoul.org/wp-json/diamond-soul/v1/balance[0m
+[32m✓[0m Stamps: [1m[96m1982[0m
+  [90m•[0m [90mPMCREDIT:[0m 1982
+  [90m•[0m [90maddress:[0m 0x9231a09bb47fe91b125e9ee95eeffb8b13b6a4c5
+
+=== Publish Summary ===
+  dsoul-cli     0.2.3  => CID: QmZ5yJkyQ9dDvmEfu3faKi1cgSKSTfFEnXbf2dzs7GyLsr
+  dsoul-publish 0.0.5  => CID: QmRKnu75qTocbsdtVbw5Jeh5CoLd6gZP5F6sZ1kej4nYTi
+  Skipped: dsoul-agent (0.0.1), dsoul-analyze (0.0.1) -- already published.
+=== Done ===
